@@ -99,22 +99,40 @@ int swap(int matriz[][TAM]){
     return melhorCusto;
 }
 
-void troca(int *a, int *b){
-    int aux;
-    aux = a;
-    a = b;
-    b = aux;
+vector <int> TrocaElementos(vector <int> Lista){
+    int indiceMax = Lista.size()-1;
+    for(int i = 0 ; i<Lista.size() ; i++){
+       int aux = Lista[i];
+       Lista[i] = Lista[indiceMax];
+       Lista[indiceMax] = aux;
+       indiceMax--;
+   }
+
+   return Lista;
 }
 
-void 2otp(int matriz[][TAM]){
-    int solTemporaria[solInicial.size()];
+void twootp(int matriz[][TAM]){
+    vector <int> ListaTemporaria;
     int melhorCusto = INT_MAX;
-
+    
     for(int i=1 ; i<TAM-1 ; i++){ //percorre do matriz[1] até matriz[n-2]
-        for()
+        vector <int> ListaTemporaria;
+        for(int j=i ; j<TAM-1 ; j++){
+            ListaTemporaria.push_back(solInicial[j]);
+            
+        }
+        vector <int> novaLista = TrocaElementos(ListaTemporaria);
+        //CalculaNovoCusto;
+        int custoAtual = 0;
+        for(int w = 0; w < nElementos; w++) {
+            custoAtual = custoAtual + matriz[novaLista[w]][novaLista[w + 1]];
+        }
+        if(custoAtual<melhorCusto){
+            melhorCusto = custoAtual;
+        } 
 
     }
-
+    //cout << melhorCusto << endl;
 
 }
 
@@ -144,6 +162,10 @@ int main(){
     //Melhorar o custo utilizando o swap
     int CustoSwap = swap(matriz);
     cout << "A solucao utilizando o swap foi de: " << CustoSwap << endl;
+
+    //Melhorar o custo utilizando o 2-OTP
+
+    twootp(matriz);
 
     return 0;
 }
