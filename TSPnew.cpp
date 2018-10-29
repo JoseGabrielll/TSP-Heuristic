@@ -66,17 +66,17 @@ int vizinhoProx(int matriz[][TAM]){
 
 }
 
-int swap(int matriz[][TAM]){
+int swap(int matriz[][TAM], int *melhorCaminhoSwap, int soluInicial[]){
 
     int solTemporaria[solInicial.size()];
     int melhorCusto = INT_MAX;
 
    
-    for(int i=1 ; i<solInicial.size() ; i++){
-        for(int j=i+1 ; j<solInicial.size() ; j++){
+    for(int i=1 ; i<solInicial.size() -1; i++){
+        for(int j=i+1 ; j<solInicial.size()-2; j++){
             //copiar a solucao inicial pra solucao que vai ser alterada
             for(int k=0 ; k<=solInicial.size() ; k++){
-                solTemporaria[k] = solInicial[k];
+                solTemporaria[k] = soluInicial[k];
             }
             
             //troca os valores
@@ -91,6 +91,10 @@ int swap(int matriz[][TAM]){
             }
             if(custoAtual<melhorCusto){
                 melhorCusto = custoAtual;
+                //salvar o melhor caminho
+                for(int q=0 ; q<solInicial.size() ; q++){
+                    melhorCaminhoSwap[q] = solTemporaria[q];
+                }
             } 
 
         }
@@ -99,42 +103,114 @@ int swap(int matriz[][TAM]){
     return melhorCusto;
 }
 
-vector <int> TrocaElementos(vector <int> Lista){
-    int indiceMax = Lista.size()-1;
-    for(int i = 0 ; i<Lista.size() ; i++){
-       int aux = Lista[i];
-       Lista[i] = Lista[indiceMax];
-       Lista[indiceMax] = aux;
-       indiceMax--;
-   }
 
-   return Lista;
-}
-
-void twootp(int matriz[][TAM]){
-    vector <int> ListaTemporaria;
-    int melhorCusto = INT_MAX;
-    
-    for(int i=1 ; i<TAM-1 ; i++){ //percorre do matriz[1] até matriz[n-2]
-        vector <int> ListaTemporaria;
-        for(int j=i ; j<TAM-1 ; j++){
-            ListaTemporaria.push_back(solInicial[j]);
-            
-        }
-        vector <int> novaLista = TrocaElementos(ListaTemporaria);
-        //CalculaNovoCusto;
-        int custoAtual = 0;
-        for(int w = 0; w < nElementos; w++) {
-            custoAtual = custoAtual + matriz[novaLista[w]][novaLista[w + 1]];
-        }
-        if(custoAtual<melhorCusto){
-            melhorCusto = custoAtual;
-        } 
-
+void otpmove(int inicio, int fim, int nElementos, int *array) // inverte os valores do array no algoritmo 2-otp // 
+{
+    int tam, i, p1, p2, aux;
+    if(inicio>fim){
+	    tam=nElementos-inicio+fim+1;
     }
-    //cout << melhorCusto << endl;
+    else{
+	    tam=fim-inicio+1;
+    }
+    p1=inicio;
+    p2=fim;
+    for(i=0;i<tam/2;i++){
+	    aux=array[p1];
+        array[p1]=array[p2];
+	    array[p2]=aux;
+	    p1=(p1==nElementos-1)?0:p1+1;
+	    p2=(p2==0)?nElementos-1:p2-1;
+    }
+    
+}
+
+
+int CalculaCusto(int matriz[][TAM], int *array){
+    int custo = 0;
+    for(int m = 0; m <solInicial.size()-1; m++) {
+        custo = custo + matriz[array[m+1]][array[m]];        
+    } 
+    return custo;
+}
+
+int twootp(int matriz[][TAM], int CustoInicial, int melhorSolucao[], int soluInicial[]){
+    int solTemporaria[solInicial.size()];
+    int custoAtual=0;
+    int melhorCusto = CustoInicial;
+
+    //Iniciando a melhor solução como sendo a solução dos vizinhos mais próximos
+    for(int w=0 ; w<solInicial.size() ; w++){
+        melhorSolucao[w] = soluInicial[w];
+    }
+
+    //Percorrer a solução buscando uma melhor
+    for(int i = 1 ; i<solInicial.size()-1 ; i++){
+        for (int j = i ; j<solInicial.size()-2 ; j++){
+            if(j==i) continue; 
+
+            //Copiando para a solução temporária a heurística dos vizinhos mais proximos
+            for(int k=0 ; k<solInicial.size() ; k++){
+                solTemporaria[k] = soluInicial[k];
+            }
+
+            //custoAtual = CustoInicial - matriz[solTemporaria[i]][solTemporaria[i-1]] - matriz[solTemporaria[j]][solTemporaria[j+1]]; //removendo o custo 
+            
+            //Trocar a posicao de determinada fatia da solucao temporaria que inicialmente é igual a solucao do vizinho
+            int numElementosTrocados = (j-i+1);
+            otpmove(i, j, numElementosTrocados, solTemporaria);
+
+            //Calcula o novo custo
+            custoAtual = CalculaCusto(matriz,solTemporaria);   
+
+            //custoAtual = custoAtual + matriz[solTemporaria[i]][solTemporaria[i-1]] + matriz[solTemporaria[j]][solTemporaria[j+1]]; //colocando o custo dos vertices que foram trocados
+
+            if(custoAtual<melhorCusto){
+                //cout << custoAtual << endl;
+                melhorCusto = custoAtual;
+                for(int k=0 ; k<solInicial.size() ; k++){
+                    melhorSolucao[k] = solTemporaria[k];
+                }
+            }
+        }
+    }     
+
+    int x = CalculaCusto(matriz, melhorSolucao);
+
+    return x;    
+   
+}
+int VND(int matriz[][TAM], int solInicial[], int melhorSolucao[]){
+    int melhorCusto=INT_MAX;
+    int custoAtual1, custoAtual2;
+    int i=0, k = 0, j=0;
+
+    while(i<3){
+        while(k<3){
+            custoAtual1 = swap(matriz, melhorSolucao, solInicial);
+            if(custoAtual1<melhorCusto){
+                melhorCusto = custoAtual1;
+                k=0;
+            }else{
+                k++;
+            }
+        }
+        while(j<3){
+            custoAtual2 = twootp(matriz, melhorCusto, melhorSolucao, melhorSolucao);
+            if(custoAtual2<melhorCusto){
+                melhorCusto = custoAtual2;
+                j=0;
+            }else{
+                j++;
+            }
+        }
+        i++;
+    }
+
+    return melhorCusto;
 
 }
+
 
 int main(){
 
@@ -155,18 +231,55 @@ int main(){
 
     //Calclar custo pelo método dos vizinhos próximos
     int custo = vizinhoProx(matriz);
+    int CustoInicial = custo;
     cout << "Custo pelo método dos vizinhos próximos: " << custo << endl;
     cout << "A solucao dos vizinhos mais próximos seguiu a sequencia: ";
     ImprimeSolucao(solInicial);
+    puts("");
 
     //Melhorar o custo utilizando o swap
-    int CustoSwap = swap(matriz);
-    cout << "A solucao utilizando o swap foi de: " << CustoSwap << endl;
+    int firstSol[nElementos+1] = {};
+    for(int a=0 ; a<=nElementos ; a++){
+        firstSol[a] = solInicial[a];
+    }
+    int melhorCaminhoSwap[nElementos+1] = {};
+    int CustoSwap = swap(matriz, melhorCaminhoSwap, firstSol);
+    cout << "Custo utilizando o swap foi de: " << CustoSwap << endl;
+    cout << "A solucao utilizando o swap seguiu a sequencia: ";
+    for(int i=0 ; i<=nElementos ; i++){
+        printf("%d ", melhorCaminhoSwap[i]);
+    }
+    puts("");
+    puts("");
+    
 
     //Melhorar o custo utilizando o 2-OTP
+    int melhorSolucaoOTP[nElementos+1] = {};
+    int custo2OTP=0;
+    custo2OTP = twootp(matriz, CustoInicial, melhorSolucaoOTP, firstSol);
+    cout << "Custo utilizando o 2-otp foi de: " << custo2OTP << endl;
+    
 
-    twootp(matriz);
+    cout << "A solucao utilizando o 2-otp seguiu a sequencia: ";
+    for(int j=0 ; j<=nElementos ; j++){
+        printf("%d ", melhorSolucaoOTP[j]);
+    }
+    puts("");
+    puts("");    
 
+    int bestsolution[nElementos+1] = {};
+    //Melhorar o custo utilizando o VND
+    int CustoVND = VND(matriz, firstSol, bestsolution);
+    cout << "O melhor custo encontrado utilizando o VND foi de: " << CustoVND << endl;
+    cout << "A solução após o VND seguiu a sequencia: ";
+    for(int v=0 ; v<=nElementos ; v++){
+        printf("%d ", bestsolution[v]);
+    } 
+    puts("");
+
+
+
+    
     return 0;
 }
 
