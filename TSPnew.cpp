@@ -66,6 +66,7 @@ int vizinhoProx(int matriz[][TAM]){
 
 }
 
+
 int swap(int matriz[][TAM], int *melhorCaminhoSwap, int soluInicial[]){
 
     int solTemporaria[solInicial.size()];
@@ -211,6 +212,62 @@ int VND(int matriz[][TAM], int solInicial[], int melhorSolucao[]){
 
 }
 
+vector <int> ConstrucaoSolucao(vector <int> candidatos, int alfa){
+    vector <int> solucao;
+    int r;
+    candidatos.erase(candidatos.begin());
+    int tamanhoVector = candidatos.size();
+    
+    //int tamanhoRand = (alfa*(tamanhoVector-1)/100);//quantidades de elementos que disputarão parar serem escolhidos de forma randomica
+    //tamanhoRand = 8;
+    while(solucao.size()<tamanhoVector-1){
+       
+        //Gerar uma nova solucao com parte randomicamente  
+      
+        r = (rand() % (candidatos.size()-1));//indice que será escolhido
+        solucao.push_back(candidatos[r]);
+        candidatos.erase(candidatos.begin()+r);
+        
+        
+    }
+    solucao.push_back(solucao[0]);
+
+    //ImprimeSolucao(solucao);
+    //puts("");
+    return solucao;
+
+}
+
+int GRASP(int matriz[][TAM], vector <int> melhorSequencia, int soluFinal[], int alfa, int numIteracoes){
+    int solVND[solInicial.size()]={};
+    int melhorCusto;
+    int custoAtual;
+    int count = 0;
+    int aux;
+    
+    while(count<numIteracoes){
+        melhorSequencia = ConstrucaoSolucao(solInicial, alfa);
+
+        //ImprimeSolucao(melhorSequencia);
+        for(int i=0 ; i<melhorSequencia.size(); i++){
+            solVND[i] = melhorSequencia[i];        
+        }
+
+        custoAtual = VND(matriz, solVND, soluFinal);
+
+        if(custoAtual<melhorCusto){
+            melhorCusto = custoAtual;
+
+            for(int k=0 ; k<solInicial.size(); k++){
+                soluFinal[k] = melhorSequencia[k];
+            }
+        }
+        count++;
+    }
+
+    return melhorCusto;
+
+}
 
 int main(){
 
@@ -275,6 +332,21 @@ int main(){
     for(int v=0 ; v<=nElementos ; v++){
         printf("%d ", bestsolution[v]);
     } 
+    puts("");
+
+    //Utilizando GRASP
+    int CustoGrasp;
+    vector <int> melhorSequenciaGrasp;
+    int SequenciaFinal[nElementos+1] = {};
+
+    CustoGrasp = GRASP(matriz, melhorSequenciaGrasp, SequenciaFinal, 80, 50); // alfa e num de iterações
+    puts("");
+    cout << "O custo final utilizando o GRASP foi de: " << CustoGrasp << endl;
+    cout << "A solucao após o GRASP seguiu a sequencia: ";
+
+    for(int q=0 ; q<=nElementos ; q++){
+        printf("%d ", SequenciaFinal[q]);
+    }
     puts("");
 
 
