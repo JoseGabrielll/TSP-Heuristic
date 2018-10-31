@@ -3,10 +3,10 @@
 #include <stdio.h>
 #include <limits.h>
 #include <vector>
-
+#include <time.h>
 using namespace std;
 
-#define TAM 10
+#define TAM 200
 
 int nElementos;
 vector <int> solInicial;
@@ -221,13 +221,15 @@ vector <int> ConstrucaoSolucao(vector <int> candidatos, int alfa){
     //int tamanhoRand = (alfa*(tamanhoVector-1)/100);//quantidades de elementos que disputarão parar serem escolhidos de forma randomica
     //tamanhoRand = 8;
     while(solucao.size()<tamanhoVector-1){
-       
+        int tamanhoRand = ((alfa * candidatos.size()))/100;
+        //std::cout << tamanhoRand << "\n";
         //Gerar uma nova solucao com parte randomicamente  
-      
-        r = (rand() % (candidatos.size()-1));//indice que será escolhido
+        srand(time(NULL));
+        if(tamanhoRand == 0)
+            tamanhoRand = 1;
+        r = (rand() % (tamanhoRand));//indice que será escolhido
         solucao.push_back(candidatos[r]);
         candidatos.erase(candidatos.begin()+r);
-        
         
     }
     solucao.push_back(solucao[0]);
