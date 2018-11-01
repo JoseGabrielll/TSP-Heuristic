@@ -6,7 +6,7 @@
 #include <time.h>
 using namespace std;
 
-#define TAM 200
+#define TAM 176
 
 int nElementos;
 vector <int> solInicial;
@@ -218,11 +218,8 @@ vector <int> ConstrucaoSolucao(vector <int> candidatos, int alfa){
     candidatos.erase(candidatos.begin());
     int tamanhoVector = candidatos.size();
     
-    //int tamanhoRand = (alfa*(tamanhoVector-1)/100);//quantidades de elementos que disputarão parar serem escolhidos de forma randomica
-    //tamanhoRand = 8;
     while(solucao.size()<tamanhoVector-1){
         int tamanhoRand = ((alfa * candidatos.size()))/100;
-        //std::cout << tamanhoRand << "\n";
         //Gerar uma nova solucao com parte randomicamente  
         srand(time(NULL));
         if(tamanhoRand == 0)
@@ -246,7 +243,8 @@ int GRASP(int matriz[][TAM], vector <int> melhorSequencia, int soluFinal[], int 
     int custoAtual;
     int count = 0;
     int aux;
-    
+
+   
     while(count<numIteracoes){
         melhorSequencia = ConstrucaoSolucao(solInicial, alfa);
 
@@ -341,7 +339,7 @@ int main(){
     vector <int> melhorSequenciaGrasp;
     int SequenciaFinal[nElementos+1] = {};
 
-    CustoGrasp = GRASP(matriz, melhorSequenciaGrasp, SequenciaFinal, 80, 50); // alfa e num de iterações
+    CustoGrasp = GRASP(matriz, melhorSequenciaGrasp, SequenciaFinal, 0, 80); // alfa e num de iterações
     puts("");
     cout << "O custo final utilizando o GRASP foi de: " << CustoGrasp << endl;
     cout << "A solucao após o GRASP seguiu a sequencia: ";
