@@ -6,7 +6,7 @@
 #include <time.h>
 using namespace std;
 
-#define TAM 176
+#define TAM 200
 
 int nElementos;
 vector <int> solInicial;
